@@ -1,3 +1,9 @@
+/*
+ * FileName：locker.h
+ * Description: 将线程同步机制信号量、互斥锁、条件变量封装成三个类
+ */
+
+
 #ifndef __LOCKER_H__
 #define __LOCKER_H__
 
