@@ -4,8 +4,6 @@
  *              实例化线程池之后，通过函数append向工作队列中添加任务
  */
 
-
-
 #ifndef _THREADPOOL_H_
 #define _THREADPOOL_H_
 
