@@ -1,34 +1,34 @@
-#ifndef _LOCKER_H_
-#define _LOCKER_H_
+#ifndef __LOCKER_H__
+#define __LOCKER_H__
 
 #include <pthread.h>
 #include <exception>
 #include <semaphore.h>
 
-//·â×°ĞÅºÅÁ¿µÄÀà
+//å°è£…ä¿¡å·é‡çš„ç±»
 class sem
 {
 public:
-	//´´½¨²¢³õÊ¼»¯ĞÅºÅÁ¿
+	//åˆ›å»ºå¹¶åˆå§‹åŒ–ä¿¡å·é‡
 	sem()
 	{
 		if (sem_init(&m_sem, 0, 0) != 0)
 		{
-			//¹¹Ôìº¯ÊıÃ»ÓĞ·µ»ØÖµ£¬¿ÉÒÔÍ¨¹ıÅÜ³öÒì³£À´±¨¸æ´íÎó
+			//æ„é€ å‡½æ•°æ²¡æœ‰è¿”å›å€¼ï¼Œå¯ä»¥é€šè¿‡è·‘å‡ºå¼‚å¸¸æ¥æŠ¥å‘Šé”™è¯¯
 			throw std::exception();
 		}
 	}
-	//Ïú»ÙĞÅºÅÁ¿
+	//é”€æ¯ä¿¡å·é‡
 	~sem()
 	{
 		sem_destroy(&m_sem);
 	}
-	//µÈ´ıĞÅºÅÁ¿
+	//ç­‰å¾…ä¿¡å·é‡
 	bool wait()
 	{
 		return sem_wait(&m_sem) == 0;
 	}
-	//Ôö¼ÓĞÅºÅÁ¿
+	//å¢åŠ ä¿¡å·é‡
 	bool post()
 	{
 		return sem_post(&m_sem) == 0;
@@ -38,11 +38,11 @@ private:
 	sem_t m_sem;
 };
 
-//·â×°»¥³âËøµÄÀà
+//å°è£…äº’æ–¥é”çš„ç±»
 class locker
 {
 public:
-	//´´½¨²¢³õÊ¼»¯»¥³âËø
+	//åˆ›å»ºå¹¶åˆå§‹åŒ–äº’æ–¥é”
 	locker()
 	{
 		if (pthread_mutex_init(&m_mutex, NULL) != 0)
@@ -50,17 +50,17 @@ public:
 			throw std::exception();
 		}
 	}
-	//Ïú»Ù»¥³âËø
+	//é”€æ¯äº’æ–¥é”
 	~locker()
 	{
 		pthread_mutex_destroy(&m_mutex);
 	}
-	//»ñÈ¡»¥³âËø
+	//è·å–äº’æ–¥é”
 	bool lock()
 	{
 		return pthread_mutex_lock(&m_mutex) == 0;
 	}
-	//ÊÍ·Å»¥³âËø
+	//é‡Šæ”¾äº’æ–¥é”
 	bool unlock()
 	{
 		return pthread_mutex_unlock(&m_mutex) == 0;
@@ -70,10 +70,11 @@ private:
 	pthread_mutex_t m_mutex;
 };
 
+//å°è£…æ¡ä»¶å˜é‡çš„ç±»
 class cond
 {
 public:
-	//´´½¨²¢³õÊ¼»¯Ìõ¼ş±äÁ¿
+	//åˆ›å»ºå¹¶åˆå§‹åŒ–æ¡ä»¶å˜é‡
 	cond()
 	{
 		if (pthread_mutex_init(&m_mutex, NULL) != 0)
@@ -86,13 +87,13 @@ public:
 			throw std::exception();
 		}
 	}
-	//Ïú»ÙÌõ¼ş±äÁ¿
+	//é”€æ¯æ¡ä»¶å˜é‡
 	~cond()
 	{
 		pthread_mutex_destroy(&m_mutex);
 		pthread_cond_destroy(&m_cond);
 	}
-	//µÈ´ıÌõ¼ş±äÁ¿
+	//ç­‰å¾…æ¡ä»¶å˜é‡
 	bool wait()
 	{
 		int ret = 0;
@@ -101,7 +102,7 @@ public:
 		pthread_mutex_unlock(&m_mutex);
 		return ret == 0;
 	}
-	//»½ĞÑµÈ´ıÌõ¼ş±äÁ¿µÄÏß³Ì
+	//å”¤é†’ç­‰å¾…æ¡ä»¶å˜é‡çš„çº¿ç¨‹
 	bool signal()
 	{
 		return pthread_cond_signal(&m_cond) == 0;
