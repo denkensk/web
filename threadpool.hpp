@@ -1,3 +1,11 @@
+/*
+ * FileName: threadpool.hpp
+ * Description: å®šä¹‰ä¸€ä¸ªçº¿ç¨‹æ± çš„æ¨¡æ¿ç±»ï¼Œä¸»çº¿ç¨‹å‘å·¥ä½œé˜Ÿåˆ—ä¸­æ’å…¥ä»»åŠ¡ï¼Œå·¥ä½œçº¿ç¨‹é€šè¿‡ç«äº‰æ¥å–å¾—ä»»åŠ¡å¹¶æ‰§è¡Œ
+ *              å®ä¾‹åŒ–çº¿ç¨‹æ± ä¹‹åï¼Œé€šè¿‡å‡½æ•°appendå‘å·¥ä½œé˜Ÿåˆ—ä¸­æ·»åŠ ä»»åŠ¡
+ */
+
+
+
 #ifndef _THREADPOOL_H_
 #define _THREADPOOL_H_
 
@@ -7,32 +15,39 @@
 #include <pthread.h>
 #include <cstdio>
 
-//Ïß³Ì³ØÀà£¬½«Ëü¶¨ÒåÎªÄ£°åÀàÊÇÎªÁË´úÂë¸´ÓÃ£¬Ä£°å²ÎÊıTÊÇÈÎÎñÀà
+/**
+ * çº¿ç¨‹æ± ç±»,å®šä¹‰ä¸ºæ¨¡æ¿ç±»
+ * æ¨¡æ¿å‚æ•°Tæ˜¯ä»»åŠ¡ç±»
+ */
 template< typename T >
 class threadpool
 {
 public:
-	//²ÎÊıthread_numberÊÇÏß³Ì³ØÖĞÏß³ÌµÄÊıÁ¿£¬max_requestsÊÇÇëÇó¶ÓÁĞÖĞ×î¶àÔÊĞíµÄ¡¢µÈ´ı´¦ÀíµÄÇëÇóÊıÁ¿
+
 	threadpool(int thread_number = 8, int max_requests = 10000);
 	~threadpool();
-	//ÍùÇëÇó¶ÓÁĞÖĞÌí¼ÓÈÎÎñ
+	
+	//å¾€è¯·æ±‚é˜Ÿåˆ—ä¸­æ·»åŠ ä»»åŠ¡
 	bool append(T* request);
-	//¹¤×÷Ïß³ÌÔËĞĞµÄº¯Êı£¬Ëü²»¶Ï´Ó¹¤×÷¶ÓÁĞÖĞÈ¡³öÈÎÎñ²¢Ö´ĞĞ
 
 private:
 	static void* worker(void* arg);
 	void run();
 
 private:
-	int m_thread_number;			//Ïß³Ì³ØÖĞÏß³ÌÊı
-	int m_max_requests;				//ÇëÇó¶ÓÁĞÖĞÔÊĞíµÄ×î´óÇëÇóÊı
-	pthread_t* m_threads;			//ÃèÊöÏß³Ì³ØµÄÊı×é£¬Æä´óĞ¡Îªm_thread_number
-	std::list< T* > m_workqueue;	//ÇëÇó¶ÓÁĞ
-	locker m_queuelocker;			//±£»¤ÇëÇó¶ÓÁĞµÄ»¥³âËø
-	sem m_queuestat;				//ÊÇ·ñÓĞÈÎÎñĞèÒª´¦Àí
-	bool m_stop;					//ÊÇ·ñ½áÊøÏß³Ì
+	int m_thread_number;			//çº¿ç¨‹æ± ä¸­çº¿ç¨‹æ•°
+	int m_max_requests;			//è¯·æ±‚é˜Ÿåˆ—ä¸­å…è®¸çš„æœ€å¤§è¯·æ±‚æ•°
+	pthread_t* m_threads;			//æè¿°çº¿ç¨‹æ± çš„æ•°ç»„ï¼Œå…¶å¤§å°ä¸ºm_thread_number
+	std::list< T* > m_workqueue;		//è¯·æ±‚é˜Ÿåˆ—
+	locker m_queuelocker;			//ä¿æŠ¤è¯·æ±‚é˜Ÿåˆ—çš„äº’æ–¥é”
+	sem m_queuestat;			//æ˜¯å¦æœ‰ä»»åŠ¡éœ€è¦å¤„ç†
+	bool m_stop;				//æ˜¯å¦ç»“æŸçº¿ç¨‹
 };
 
+/* 
+ * Description: åˆå§‹åŒ–æˆå‘˜å˜é‡ï¼Œåˆ›å»ºå·¥ä½œçº¿ç¨‹ï¼Œå¹¶å°†å·¥ä½œçº¿ç¨‹è®¾ç½®ä¸ºè„±ç¦»çº¿ç¨‹
+ * Inputï¼š thread_numberï¼šçº¿ç¨‹æ± ä¸­çº¿ç¨‹çš„æ•°é‡  max_requestsï¼š è¯·æ±‚é˜Ÿåˆ—ä¸­æœ€å¤šå…è®¸çš„ã€ç­‰å¾…å¤„ç†çš„è¯·æ±‚æ•°é‡
+ */
 template<typename T>
 threadpool<T>::threadpool(int thread_number, int max_requests)
 		: m_thread_number(thread_number), m_max_requests(max_requests),
@@ -49,7 +64,7 @@ threadpool<T>::threadpool(int thread_number, int max_requests)
 		throw std::exception();
 	}
 
-	//´´½¨thread_number¸öÏß³Ì£¬²¢½«ËüÃÇ¶¼ÉèÖÃÎªÍÑÀëÏß³Ì
+	//åˆ›å»ºthread_numberä¸ªçº¿ç¨‹ï¼Œå¹¶å°†å®ƒä»¬éƒ½è®¾ç½®ä¸ºè„±ç¦»çº¿ç¨‹
 	for (int i = 0; i < m_thread_number; ++i)
 	{
 		printf("create the %dth thread\n", i);
@@ -58,7 +73,7 @@ threadpool<T>::threadpool(int thread_number, int max_requests)
 			delete [] m_threads;
 			throw std::exception();
 		}
-		//·Ç×èÈû£¬²¢ÇÒÏß³ÌÔËĞĞ½áÊøºó×Ô¶¯ÊÍ·ÅËùÓĞ×ÊÔ´
+		//è„±ç¦»çº¿ç¨‹ï¼Œå¹¶ä¸”çº¿ç¨‹è¿è¡Œç»“æŸåè‡ªåŠ¨é‡Šæ”¾æ‰€æœ‰èµ„æº
 		if (pthread_detach(m_threads[i]))
 		{
 			delete [] m_threads;
@@ -67,6 +82,9 @@ threadpool<T>::threadpool(int thread_number, int max_requests)
 	}
 }
 
+/* 
+ * Description: é‡Šæ”¾çº¿ç¨‹æ± æ•°ç»„çš„å†…å­˜ï¼Œä¿®æ”¹æ ‡å¿—ä½ç»ˆæ­¢å·¥ä½œçº¿ç¨‹
+ */
 template<typename T>
 threadpool<T>::~threadpool()
 {
@@ -74,10 +92,15 @@ threadpool<T>::~threadpool()
 	m_stop = true;
 }
 
+/* 
+ * Description: å‘å·¥ä½œé˜Ÿåˆ—ä¸­æ·»åŠ ä»»åŠ¡
+ * Inputï¼š requestï¼š ç±»å‹ä¸ºTçš„å·¥ä½œä»»åŠ¡
+ * Returnï¼š tureï¼šæ·»åŠ æˆåŠŸ  falseï¼š å·¥ä½œé˜Ÿåˆ—ä¸­ä»»åŠ¡ä¹¦å·²ç»è¶…è¿‡æœ€å¤§é™åˆ¶
+ */
 template<typename T>
 bool threadpool<T>::append(T* request)
 {
-	//²Ù×÷¹¤×÷¶ÓÁĞÊ±Ò»¶¨Òª¼ÓËø£¬ÒòÎªËü±»ËùÓĞÏß³Ì¹²Ïí
+	//æ“ä½œå·¥ä½œé˜Ÿåˆ—æ—¶ä¸€å®šè¦åŠ é”ï¼Œå› ä¸ºå®ƒè¢«æ‰€æœ‰çº¿ç¨‹å…±äº«
 	m_queuelocker.lock();
 	if (m_workqueue.size() > m_max_requests)
 	{
@@ -90,6 +113,10 @@ bool threadpool<T>::append(T* request)
 	return true;
 }
 
+/* 
+ * Description: çº¿ç¨‹çš„å·¥ä½œå‡½æ•°
+ * Inputï¼š argï¼š ç±»å‹ä¸ºvoid*çš„thisæŒ‡é’ˆ
+ */
 template<typename T>
 void* threadpool<T>::worker(void* arg)
 {
@@ -98,6 +125,9 @@ void* threadpool<T>::worker(void* arg)
 	return pool;
 }
 
+/* 
+ * Description: å·¥ä½œçº¿ç¨‹å¾ªç¯è¿è½¬ï¼Œåœ¨å·¥ä½œé˜Ÿåˆ—ä¸­æå–ä»»åŠ¡
+ */
 template<typename T>
 void threadpool<T>::run()
 {
@@ -120,6 +150,4 @@ void threadpool<T>::run()
 		request->process();
 	}
 }
-
-
 #endif
